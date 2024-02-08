@@ -1,15 +1,30 @@
 {
-  "dependencies": {
-    "imap": "^0.8.19",
-    "mailparser": "^3.6.7",
-    "ts-node": "^10.9.2"
-  },
-  "devDependencies": {
-    "@types/imap": "^0.8.40",
-    "@types/mailparser": "^3.4.4",
-    "tsc": "^2.0.4"
-  },
-  "scripts": {
-    "build": "npx tsc"
-  }
+    "name": "mail",
+    "version": "1.0.0",
+    "description": "",
+    "main": "dist/main.js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/NotRustyBot/mail.git"
+    },
+    "dependencies": {
+        "imap": "^0.8.19",
+        "mailparser": "^3.6.7",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.3.3"
+    },
+    "devDependencies": {
+        "@types/imap": "^0.8.40",
+        "@types/mailparser": "^3.4.4",
+        "tsc": "^2.0.4"
+    },
+    "scripts": {
+        "build": "npx tsc"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/NotRustyBot/mail/issues"
+    },
+    "homepage": "https://github.com/NotRustyBot/mail#readme"
 }
