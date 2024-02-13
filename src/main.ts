@@ -2,7 +2,6 @@ import Imap from "imap"
 import { simpleParser } from "mailparser"
 import { openBox } from "./asyncImap"
 import { cleanMunipolis } from "./parser"
-import { execSync } from "child_process";
 const imapConfig = {
     user: "jacekmunipolis@email.cz",
     password: process.env.password,
