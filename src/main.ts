@@ -2,6 +2,8 @@ import Imap from "imap"
 import { simpleParser } from "mailparser"
 import { openBox } from "./asyncImap"
 import { cleanMunipolis } from "./parser"
+import { exec, execSync } from "child_process";
+import { log } from "console";
 const imapConfig = {
     user: "jacekmunipolis@email.cz",
     password: process.env.password,
@@ -11,13 +13,15 @@ const imapConfig = {
 };
 
 const imap = new Imap(imapConfig);
-imap.once('ready', async () => {
-    console.log("ready!");
-    await Promise.all([openBox(imap, "INBOX"), openBox(imap, "newsletters")]);
-    setInterval(() => {
+console.log(execSync("git log -1 --abbrev-commit --format=%h", { encoding: "utf-8" }));
+setInterval(() => {
+    imap.once('ready', async () => {
+        await Promise.all([openBox(imap, "INBOX"), openBox(imap, "newsletters")]);
         console.log("checking...");
-        imap.search(['UNSEEN', ['SINCE', new Date()]], (err, results) => {
+        imap.search(['UNSEEN'], (err, results) => {
             if (results.length == 0) return;
+            console.log("new: " + results.length);
+
             const f = imap.fetch(results, { bodies: '' });
             f.on('message', msg => {
                 msg.on('body', stream => {
@@ -51,11 +55,11 @@ imap.once('ready', async () => {
                 imap.end();
             });
         });
-    }, 60 * 1000)
-})
+    })
+
+    imap.connect();
+}, 60 * 1000)
 
 imap.on("error", (ex: any) => {
     console.log(ex);
 });
-
-imap.connect();
