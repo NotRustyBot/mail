@@ -58,5 +58,4 @@ imap.on("error", (ex: any) => {
     console.log(ex);
 });
 
-setInterval(imap.connect, 60 * 60 * 12 * 1000);
 imap.connect();
