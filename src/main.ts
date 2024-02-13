@@ -12,7 +12,8 @@ const imapConfig = {
 };
 
 const imap = new Imap(imapConfig);
-console.log(">" + execSync("git log -1 --abbrev-commit --format=%h", { encoding: "utf-8" }));
+console.log("---");
+
 setInterval(() => {
     imap.once('ready', async () => {
         await Promise.all([openBox(imap, "INBOX"), openBox(imap, "newsletters")]);
