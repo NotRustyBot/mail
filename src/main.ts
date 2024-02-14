@@ -13,13 +13,22 @@ const imapConfig = {
 const imap = new Imap(imapConfig);
 console.log("---");
 
-setInterval(() => {
-    imap.once('ready', async () => {
-        await Promise.all([openBox(imap, "INBOX"), openBox(imap, "newsletters")]);
-        console.log("checking...");
+async function processBox() {
+    return new Promise<void>((resolve, reject) => {
+        let busy = 2;
+        const solve = () => {
+            busy--;
+            if (busy <= 0) resolve();
+        }
         imap.search(['UNSEEN'], (err, results) => {
-            if (results.length == 0) return;
             console.log("new: " + results.length);
+            if (results.length == 0) {
+                solve();
+                return;
+            }
+
+            busy += results.length;
+            solve();
 
             const f = imap.fetch(results, { bodies: '' });
             f.on('message', msg => {
@@ -43,21 +52,32 @@ setInterval(() => {
                     const { uid } = attrs;
                     imap.addFlags(uid, ['\\Seen'], () => {
                         console.log('Marked as read!');
+                        solve();
                     });
                 });
             });
             f.once('error', ex => {
-                return Promise.reject(ex);
+                return reject(ex);
             });
             f.once('end', () => {
-                console.log('Done fetching all messages!');
-                imap.end();
+                solve();
             });
         });
+    });
+}
+
+setInterval(() => {
+    imap.once('ready', async () => {
+        console.log("checking...");
+        await openBox(imap, "INBOX");
+        await processBox();
+        await openBox(imap, "newsletters");
+        await processBox();
+        imap.end();
     })
 
     imap.connect();
-}, 60 * 1000)
+}, 60 * 1000);
 
 imap.on("error", (ex: any) => {
     console.log(ex);

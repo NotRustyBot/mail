@@ -5,10 +5,10 @@ function openBox(imap, box) {
     return new Promise((resolve, reject) => {
         imap.openBox(box, false, (err, box) => {
             if (err) {
-                reject(err); // If there's an error, reject the promise with the error
+                reject(err);
             }
             else {
-                resolve(box); // If successful, resolve the promise with the mailbox information
+                resolve(box);
             }
         });
     });
