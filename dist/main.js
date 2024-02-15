@@ -14,9 +14,8 @@ const imapConfig = {
     port: 993,
     tls: true,
 };
-const imap = new imap_1.default(imapConfig);
 console.log("---");
-async function processBox() {
+async function processBox(imap) {
     return new Promise((resolve, reject) => {
         let busy = 2;
         const solve = () => {
@@ -69,16 +68,17 @@ async function processBox() {
     });
 }
 setInterval(() => {
+    const imap = new imap_1.default(imapConfig);
     imap.once('ready', async () => {
         console.log("checking...");
         await (0, asyncImap_1.openBox)(imap, "INBOX");
-        await processBox();
+        await processBox(imap);
         await (0, asyncImap_1.openBox)(imap, "newsletters");
-        await processBox();
+        await processBox(imap);
         imap.end();
     });
     imap.connect();
+    imap.on("error", (ex) => {
+        console.log(ex);
+    });
 }, 60 * 1000);
-imap.on("error", (ex) => {
-    console.log(ex);
-});

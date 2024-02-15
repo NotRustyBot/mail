@@ -10,10 +10,9 @@ const imapConfig = {
     tls: true,
 };
 
-const imap = new Imap(imapConfig);
 console.log("---");
 
-async function processBox() {
+async function processBox(imap: Imap) {
     return new Promise<void>((resolve, reject) => {
         let busy = 2;
         const solve = () => {
@@ -67,18 +66,20 @@ async function processBox() {
 }
 
 setInterval(() => {
+    const imap = new Imap(imapConfig);
+
     imap.once('ready', async () => {
         console.log("checking...");
         await openBox(imap, "INBOX");
-        await processBox();
+        await processBox(imap);
         await openBox(imap, "newsletters");
-        await processBox();
+        await processBox(imap);
         imap.end();
     })
 
     imap.connect();
-}, 60 * 1000);
 
-imap.on("error", (ex: any) => {
-    console.log(ex);
-});
+    imap.on("error", (ex: any) => {
+        console.log(ex);
+    });
+}, 60 * 1000);
