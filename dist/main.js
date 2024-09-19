@@ -22,10 +22,8 @@ const main = async () => {
 async function processBox(boxName, client) {
     let lock = await client.getMailboxLock(boxName);
     try {
-        let messages = new Array();
         for await (let message of client.fetch({ seen: false }, { source: true })) {
             let mail = await (0, mailparser_1.simpleParser)(message.source);
-            messages.push(message.uid);
             let toSend = mail.text;
             if (mail.from.value.find((e) => e.address == "info@munipolis.cz"))
                 toSend = cleanMunipolis(toSend);
@@ -39,7 +37,7 @@ async function processBox(boxName, client) {
                 }),
             });
         }
-        await client.messageFlagsSet(messages.join(","), ["\\Seen"]);
+        await client.messageFlagsSet({ seen: false }, ["\\Seen"]);
     }
     catch (err) {
         console.log(err);
