@@ -1,85 +1,61 @@
-import Imap from "imap"
-import { simpleParser } from "mailparser"
-import { openBox } from "./asyncImap"
-import { cleanMunipolis } from "./parser"
-const imapConfig = {
-    user: "jacekmunipolis@email.cz",
-    password: process.env.password,
+import { ImapFlow } from "imapflow";
+import { simpleParser } from "mailparser";
+
+const client = new ImapFlow({
+    auth: {
+        user: "jacekmunipolis@email.cz",
+        pass: process.env.password,
+    },
     host: "imap.seznam.cz",
     port: 993,
-    tls: true,
+    logger: false,
+    logRaw: false,
+});
+
+const main = async () => {
+    // Wait until client connects and authorizes
+    await client.connect();
+
+    await processBox("INBOX");
+    await processBox("newsletters");
+
+    await client.logout();
 };
 
-console.log("---");
-
-async function processBox(imap: Imap) {
-    return new Promise<void>((resolve, reject) => {
-        let busy = 2;
-        const solve = () => {
-            busy--;
-            if (busy <= 0) resolve();
+async function processBox(boxName: string) {
+    let lock = await client.getMailboxLock(boxName);
+    try {
+        for await (let message of client.fetch({ seen: false }, { source: true })) {
+            simpleParser(message.source).then((mail) => {
+                let toSend = mail.text;
+                if (mail.from.value.find(e => e.address == "info@munipolis.cz")) toSend = cleanMunipolis(toSend);
+                console.log(toSend);
+                
+                fetch("https://discord.com/api/webhooks/1205190222539919360/y76JGOjk72DFuv1CSzmEtyWdbyprlY-sNNGsE7wSa6FtLhLGGF8QWrPn6g5UkhDOUYX7", {
+                    method: "post",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        content: `**${mail.subject}**\n---\n${toSend}`.substring(0, 2000),
+                    }),
+                })
+            });
         }
-        imap.search(['UNSEEN'], (err, results) => {
-            console.log("new: " + results.length);
-            if (results.length == 0) {
-                solve();
-                return;
-            }
+    } catch (err) {
+        console.log(err);
+    }
 
-            busy += results.length;
-            solve();
-
-            const f = imap.fetch(results, { bodies: '' });
-            f.on('message', msg => {
-                msg.on('body', stream => {
-                    simpleParser(stream as any, async (err, parsed) => {
-                        console.log(parsed.subject);
-                        let toSend = parsed.text;
-                        if (parsed.from.value.find(e => e.address == "info@munipolis.cz")) toSend = cleanMunipolis(toSend);
-                        fetch("https://discord.com/api/webhooks/1205190222539919360/y76JGOjk72DFuv1CSzmEtyWdbyprlY-sNNGsE7wSa6FtLhLGGF8QWrPn6g5UkhDOUYX7", {
-                            method: "post",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                content: `**${parsed.subject}**\n---\n${toSend}`
-                            }),
-                        })
-                    });
-                });
-                msg.once('attributes', attrs => {
-                    const { uid } = attrs;
-                    imap.addFlags(uid, ['\\Seen'], () => {
-                        console.log('Marked as read!');
-                        solve();
-                    });
-                });
-            });
-            f.once('error', ex => {
-                return reject(ex);
-            });
-            f.once('end', () => {
-                solve();
-            });
-        });
-    });
+    lock.release();
 }
 
 setInterval(() => {
-    const imap = new Imap(imapConfig);
+    main().catch((err) => console.error(err));
+}, 1000 * 60);
 
-    imap.once('ready', async () => {
-        console.log("checking...");
-        await openBox(imap, "INBOX");
-        await processBox(imap);
-        await openBox(imap, "newsletters");
-        await processBox(imap);
-        imap.end();
-    })
 
-    imap.connect();
-
-    imap.on("error", (ex: any) => {
-        console.log(ex);
-    });
-}, 60 * 1000);
+export function cleanMunipolis(text: string) {
+    text = text.split("-\n\nNastavení upozornění")[0];
+    text = text.split("Nezobrazuje se Vám E-mail správně?")[1];
+    return text;
+}

@@ -1,30 +1,28 @@
 {
-    "name": "mail",
-    "version": "1.0.0",
-    "description": "",
-    "main": "dist/main.js",
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/NotRustyBot/mail.git"
-    },
-    "dependencies": {
-        "imap": "^0.8.19",
-        "mailparser": "^3.6.7"
-    },
-    "devDependencies": {
-        "@types/imap": "^0.8.40",
-        "@types/mailparser": "^3.4.4",
-        "@types/node": "^20.11.17",
-        "ts-node": "^10.9.2",
-        "typescript": "^5.3.3"
-    },
-    "scripts": {
-        "build": "tsc"
-    },
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/NotRustyBot/mail/issues"
-    },
-    "homepage": "https://github.com/NotRustyBot/mail#readme"
+  "name": "mail",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NotRustyBot/mail.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NotRustyBot/mail/issues"
+  },
+  "homepage": "https://github.com/NotRustyBot/mail#readme",
+  "dependencies": {
+    "@types/imapflow": "^1.0.19",
+    "imapflow": "^1.0.164",
+    "mailparser": "^3.7.1",
+    "tsx": "^4.19.1"
+  },
+  "devDependencies": {
+    "@types/mailparser": "^3.4.4"
+  }
 }
