@@ -1,7 +1,6 @@
 import { ImapFlow } from "imapflow";
 import { simpleParser } from "mailparser";
-
-
+import fs from "fs";
 
 const main = async () => {
     const client = new ImapFlow({
@@ -14,7 +13,7 @@ const main = async () => {
         logger: false,
         logRaw: false,
     });
-    
+
     await client.connect();
 
     await processBox("INBOX", client);
@@ -55,7 +54,6 @@ setInterval(() => {
 main().catch((err) => console.error(err));
 
 export function cleanMunipolis(text: string) {
-    text = text.split("-\n\nNastavení upozornění")[0];
-    text = text.split("Nezobrazuje se Vám E-mail správně?")[1];
+    text = text.split("Nastavení upozornění na zprávy z webu můžete")[0];
     return text;
 }

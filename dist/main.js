@@ -49,8 +49,7 @@ setInterval(() => {
 }, 1000 * 60);
 main().catch((err) => console.error(err));
 function cleanMunipolis(text) {
-    text = text.split("-\n\nNastavení upozornění")[0];
-    text = text.split("Nezobrazuje se Vám E-mail správně?")[1];
+    text = text.split("Nastavení upozornění na zprávy z webu můžete")[0];
     return text;
 }
 exports.cleanMunipolis = cleanMunipolis;
