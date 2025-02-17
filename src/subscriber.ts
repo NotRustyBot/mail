@@ -1,7 +1,6 @@
 import { broker } from "./broker";
 import { Message } from "./message";
 import { Mongo } from "./mongo";
-import { DiscordWebhook } from "./subscribers/discordWebhook";
 import { Topic } from "./topic";
 import { config, id } from "./utils";
 
