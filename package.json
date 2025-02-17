@@ -10,6 +10,7 @@
         "uuid": "^11.0.5"
     },
     "devDependencies": {
+        "tsc": "^2.0.4",
         "@types/express": "^5.0.0",
         "@types/imapflow": "^1.0.19",
         "@types/mailparser": "^3.4.5",
