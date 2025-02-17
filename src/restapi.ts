@@ -47,7 +47,7 @@ export function restApi(app: express.Application) {
 
     app.post("/subscriber/create", async (req, res) => {
         if (await auth(req, res)) return;
-        const { config, name, type, memory } = req.body;
+        const { config, name, type, memory, topics } = req.body;
         const id = generateId();
 
         const subscriber = Subscriber.fromData({
@@ -55,7 +55,8 @@ export function restApi(app: express.Application) {
             name,
             type,
             config,
-            memory
+            memory,
+            topics,
         });
 
         Mongo.updateSubscriber(subscriber.getData());
@@ -94,7 +95,7 @@ export function restApi(app: express.Application) {
 
     app.post("/publisher/create", async (req, res) => {
         if (await auth(req, res)) return;
-        const { config, name, type, memory } = req.body;
+        const { config, name, type, memory, topics } = req.body;
         const id = generateId();
 
         const publisher = Publisher.fromData({
@@ -102,7 +103,8 @@ export function restApi(app: express.Application) {
             name,
             type,
             config,
-            memory
+            memory,
+            topics
         });
 
         Mongo.updatePublisher(publisher.getData());

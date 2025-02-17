@@ -51,7 +51,7 @@ export class Publisher {
             publisher.config = data.config;
             publisher.memory = data.memory;
 
-            for (const topicId of data.topics) {
+            for (const topicId of data.topics ?? []) {
                 const topic = broker.topics.get(topicId);
                 if (!topic) continue;
                 publisher.addTopic(topic);

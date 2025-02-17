@@ -56,7 +56,7 @@ export class Subscriber {
             subscriber.config = data.config;
             subscriber.memory = data.memory;
 
-            for (const topicId of data.topics) {
+            for (const topicId of data.topics ?? []) {
                 const topic = broker.topics.get(topicId);
                 if (!topic) continue;
                 subscriber.subscribe(topic);
