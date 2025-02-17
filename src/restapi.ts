@@ -70,6 +70,28 @@ export function restApi(app: express.Application) {
         res.send(subscribers);
     });
 
+    app.post("/subscriber/subscribe", async (req, res) => {
+        if (await auth(req, res)) return;
+        const { topic, subscriber } = req.body;
+
+        const topicObj = broker.topics.get(topic);
+        if (!topicObj) {
+            res.status(404).send("Topic not found");
+            return;
+        }
+
+        const subscriberObj = broker.subscribers.get(subscriber);
+        if (!subscriberObj) {
+            res.status(404).send("Subscriber not found");
+            return;
+        }
+
+        topicObj.subscribe(subscriberObj);
+
+        Mongo.updateSubscriber(subscriber.getData());
+        res.status(200).send('OK');
+    });
+
     app.post("/publisher/create", async (req, res) => {
         if (await auth(req, res)) return;
         const { config, name, type, memory } = req.body;
@@ -86,6 +108,28 @@ export function restApi(app: express.Application) {
         Mongo.updatePublisher(publisher.getData());
         broker.publishers.set(id, publisher);
         res.send(id);
+    });
+
+    app.post("/publisher/subscribe", async (req, res) => {
+        if (await auth(req, res)) return;
+        const { topic, publisher } = req.body;
+
+        const topicObj = broker.topics.get(topic);
+        if (!topicObj) {
+            res.status(404).send("Topic not found");
+            return;
+        }
+
+        const publisherObj = broker.publishers.get(publisher);
+        if (!publisherObj) {
+            res.status(404).send("Publisher not found");
+            return;
+        }
+
+        publisherObj.addTopic(topicObj);
+
+        Mongo.updatePublisher(publisher.getData());
+        res.status(200).send('OK');
     });
 
 
