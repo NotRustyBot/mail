@@ -141,6 +141,23 @@ export function restApi(app: express.Application) {
         res.send(publishers);
     });
 
+    app.post("/subscriber/delete", async (req, res) => {
+        if (await auth(req, res)) return;
+        const subscribers = await Mongo.deleteSubscriber(req.body.id);
+        res.send(subscribers);
+    });
+
+    app.post("/publisher/delete", async (req, res) => {
+        if (await auth(req, res)) return;
+        const publishers = await Mongo.deletePublisher(req.body.id);
+        res.send(publishers);
+    });
+
+    app.post("/topic/delete", async (req, res) => {
+        if (await auth(req, res)) return;
+        const topics = await Mongo.deleteTopic(req.body.id);
+        res.send(topics);
+    });
 
     app.listen(process.env.api_port ?? 80);
 }

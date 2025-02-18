@@ -69,4 +69,16 @@ export class Mongo {
     static log(source: string, message: string, severity: "info" | "warn" | "error" = "info") {
         this.db.collection("log").insertOne({ date: new Date(), source, message, severity });
     }
+
+    static deleteSubscriber(id: string) {
+        return this.db.collection("subscribers").deleteOne({ id });
+    }
+
+    static deletePublisher(id: string) {
+        return this.db.collection("publishers").deleteOne({ id });
+    }
+
+    static deleteTopic(id: string) {
+        return this.db.collection("topics").deleteOne({ id });
+    }
 }
