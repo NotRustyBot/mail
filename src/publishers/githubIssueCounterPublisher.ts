@@ -20,8 +20,8 @@ export class GithubIssueCounterPublisher extends Publisher {
         try {
             const count = await countIssues(this.config.repo, this.config.filter);
             if (count != this.memory.lastCount) {
+                this.publish(Message.create({ content: `${this.config.repo} ${this.config.filter} ${count.toString()} issues` }));
                 this.memory.lastCount = count;
-                this.publish(Message.create({ content: count.toString() }));
                 Mongo.updatePublisher(this.getData());
             }
         } catch (error) {
