@@ -89,7 +89,7 @@ export function restApi(app: express.Application) {
 
         topicObj.subscribe(subscriberObj);
 
-        Mongo.updateSubscriber(subscriber.getData());
+        Mongo.updateSubscriber(subscriberObj.getData());
         res.status(200).send('OK');
     });
 
@@ -130,7 +130,7 @@ export function restApi(app: express.Application) {
 
         publisherObj.addTopic(topicObj);
 
-        Mongo.updatePublisher(publisher.getData());
+        Mongo.updatePublisher(publisherObj.getData());
         res.status(200).send('OK');
     });
 
