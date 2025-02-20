@@ -93,7 +93,7 @@ export function restApi(app: express.Application) {
             return;
         }
 
-        topicObj.subscribe(subscriberObj);
+        subscriberObj.subscribe(topicObj);
 
         Mongo.updateSubscriber(subscriberObj.getData());
         res.status(200).send('OK');
