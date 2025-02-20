@@ -71,6 +71,12 @@ export function restApi(app: express.Application) {
         res.send(subscribers);
     });
 
+    app.get("/log", async (req, res) => {
+        if (await auth(req, res)) return;
+        const log = await Mongo.getLog();
+        res.send(log);
+    });
+
     app.post("/subscriber/subscribe", async (req, res) => {
         if (await auth(req, res)) return;
         const { topic, subscriber } = req.body;

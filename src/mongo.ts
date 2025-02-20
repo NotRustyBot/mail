@@ -5,6 +5,7 @@ import { PublisherData } from "./publisher";
 import { generateId, generateKey } from "./utils";
 
 export class Mongo {
+
     static db: Db;
     static async connect() {
         const mongourl = process.env.mongo_url ?? "mongodb://10.200.140.14:27017";
@@ -80,5 +81,9 @@ export class Mongo {
 
     static deleteTopic(id: string) {
         return this.db.collection("topics").deleteOne({ id });
+    }
+
+    static async getLog() {
+        return this.db.collection("log").find().sort({ date: -1 }).toArray();        
     }
 }

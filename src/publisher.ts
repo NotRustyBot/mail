@@ -43,23 +43,27 @@ export class Publisher {
     static factoryLookup: { [key: string]: typeof Publisher } = {};
 
     static fromData(data: unknown): Publisher {
-        if (isPublisherData(data)) {
-            const publisher = new this.factoryLookup[data.type]();
-            publisher.id = data.id;
-            publisher.name = data.name;
-            publisher.type = data.type;
-            publisher.config = data.config;
-            publisher.memory = data.memory;
+        try {
+            if (isPublisherData(data)) {
+                const publisher = new this.factoryLookup[data.type]();
+                publisher.id = data.id;
+                publisher.name = data.name;
+                publisher.type = data.type;
+                publisher.config = data.config;
+                publisher.memory = data.memory;
 
-            for (const topicId of data.topics ?? []) {
-                const topic = broker.topics.get(topicId);
-                if (!topic) continue;
-                publisher.addTopic(topic);
+                for (const topicId of data.topics ?? []) {
+                    const topic = broker.topics.get(topicId);
+                    if (!topic) continue;
+                    publisher.addTopic(topic);
+                }
+
+                return publisher;
+            } else {
+                throw new Error("Invalid publisher data: " + JSON.stringify(data));
             }
-
-            return publisher;
-        } else {
-            throw new Error("Invalid publisher data");
+        } catch (error) {
+            Mongo.log("Publisher", error);
         }
     }
 

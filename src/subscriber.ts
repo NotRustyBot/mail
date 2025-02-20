@@ -48,23 +48,27 @@ export class Subscriber {
     static factoryLookup: { [key: string]: typeof Subscriber } = {};
 
     static fromData(data: unknown): Subscriber {
-        if (isSubscriberData(data)) {
-            const subscriber = new this.factoryLookup[data.type]();
-            subscriber.id = data.id;
-            subscriber.name = data.name;
-            subscriber.type = data.type;
-            subscriber.config = data.config;
-            subscriber.memory = data.memory;
+        try {
+            if (isSubscriberData(data)) {
+                const subscriber = new this.factoryLookup[data.type]();
+                subscriber.id = data.id;
+                subscriber.name = data.name;
+                subscriber.type = data.type;
+                subscriber.config = data.config;
+                subscriber.memory = data.memory;
 
-            for (const topicId of data.topics ?? []) {
-                const topic = broker.topics.get(topicId);
-                if (!topic) continue;
-                subscriber.subscribe(topic);
+                for (const topicId of data.topics ?? []) {
+                    const topic = broker.topics.get(topicId);
+                    if (!topic) continue;
+                    subscriber.subscribe(topic);
+                }
+
+                return subscriber;
             }
-
-            return subscriber;
+            throw new Error("Invalid subscriber data");
+        } catch (error) {
+            Mongo.log("Subscriber", error);
         }
-        throw new Error("Invalid subscriber data");
     }
 
     getData() {
